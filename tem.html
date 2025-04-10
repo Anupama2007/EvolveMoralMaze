@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Parrot Game</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center;height:100vh;width:100vw; background-image:url('/static/background.jpg');background-size:cover;background-position: center; display:flex;overflow:hidden;justify-content: center;align-items: center; overflow-x:hidden;overflow-y: hidden;}
+        .page { display: none; }
+        #loginPage { display:flex; flex-direction:column; width:1400px; height:670px; text-align:center; align-items:center }
+        #parrotContainer img { width: 350px; height: 350px; position:relative;top:10px}
+        #firstName,#lastName,#grade{ width:500px;height:50px; border:10px solid brown; border-radius :5px;}
+        .question { margin: 20px; }
+        
+        #questionContainer{
+            align-items:center;
+            justify-content: center;
+        }
+      
+        .questionbox{
+            width:500px;
+            height:25px;
+            background-color: rgb(170, 220, 241);
+            border:1px solid black;
+            margin:10px auto;
+            padding:10px;
+            font-size:20px;
+        }
+        .learning{
+            width:700px;
+            height:25px;
+            background-color: rgb(170, 220, 241);
+            border:1px solid black;
+            margin:10px auto;
+            padding:10px;
+            font-size:20px;
+        }
+        h1{
+            background-size: cover; /* Remove size restriction */
+            color:rgb(248, 249, 247);
+            
+            padding: 15px;
+            border-radius: 8px;
+        }
+        h3{
+            background-size: cover; /* Remove size restriction */
+            color:rgb(248, 249, 247);
+            background:rgb(28, 90, 41,0.8);
+            border:2px solid rgb(7, 61, 34);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+         
+        .question {
+            margin: 20px;
+        }
+
+        #testNowBtn, #showScoreBtn ,#logb,#playb{
+            width: 120px;
+            height: 50px;
+            background:rgb(4, 136, 224);
+            color:white;;
+            border-radius: 10px;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            border:1px solid white;
+        }
+
+        #testNowBtn:hover, #showScoreBtn:hover,#logb:hover,#playb:hover {
+            background-color: rgb(167, 250, 161);
+            color:rgb(3, 9, 12);
+            border:1px solid rgb(11, 11, 11);
+            
+        }
+
+
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        #playA,#playB{
+            width:600px;
+            height:10px;
+            display: flex;
+            align-items: center;  /* Centers text vertically */
+            justify-content: center; /* Centers text horizontally */
+            margin: 10px auto;
+            color:#f2f2f0;
+            background:rgb(247, 77, 10);
+            border: 1px solid black;
+            
+
+
+        }
+        /* Training Phase: Parrot is Centered */
+#gameContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+/* Testing Phase: Move Parrot to Left & Questions to Right */
+.test-mode #gameContainer {
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#parrotContainer {
+    transition: all 0.5s ease-in-out;
+}
+
+/* In test mode, parrot moves to the left */
+.test-mode #parrotContainer {
+    flex: 0.3;
+    display: flex;
+    margin:20px;
+    justify-content: flex-start;
+    transform: translateY(80px); /* Moves the parrot 30px down */
+    transition: transform 0.3s ease-in-out;
+
+}
+.test-mode #questionContainer, 
+.test-mode .answerOptions { 
+    font-size: 20px;  /* Increases text size */
+    font-weight: bold; /* Makes text bolder */
+    transition: font-size 0.3s ease-in-out;
+}
+.test-mode #questionContainer * { 
+    font-size: 15px !important;  /* Forcefully increases text size */
+    font-weight: bold;
+    line-height: 1.2;  /* Reduces extra space between lines */
+}
+#testPrompt {
+    font-weight: bold;
+    display:none;
+    background-color: pink;
+    font-size: 18px;
+    transform: translateX(-50%);
+    left: 50%;
+    position:absolute;
+    text-align: center;
+    margin-bottom: 10px;
+    width:400px;
+    height:30px;
+    border:1px solid black;
+    top:60px;
+    padding:10px;
+}
+
+
+.test-mode #questionContainer {
+    width:500px;  /* Reduce width */
+    background: rgb(148, 235, 251);
+    border:1px solid black;
+    padding: 20px;
+    border-radius: 10px;
+    margin-left: 600px; /* Increase margin to push it more to the right */
+    margin-top: -200px; /* Move up */
+    position: relative;
+}
+.test-mode {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+#resultPage {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 30px;
+    text-align: center;
+}
+
+#resultContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+#resultImage {
+    width: 550px;
+    height: 500px;
+    object-fit: contain; 
+    display:none;
+    top:20px;/* Ensures image is properly scaled */
+    transform: translateY(-20px);
+}
+
+#trainingReview {
+    max-width: 400px;
+    transform: translateY(-50px);
+    font-size: 18px;
+    text-align: left;
+    background-color: rgb(138, 208, 249);
+    border:1px solid black;
+    display: none; /* Hide by default, show via JS */
+}
+#resultText {
+    background-color:rgb(196, 239, 239);
+    border:1px solid black; /* Yellow background */
+    padding: 10px; /* Add padding for better appearance */
+    border-radius: 5px; /* Optional: Rounds corners */
+    display: none; /* Keeps background only around text */
+    text-align: center;
+}
+#gamePage{
+    background: linear-gradient(90deg, rgba(244, 232, 163, 0.6) 13%, rgba(187, 244, 189, 0.6) 100%);
+    height:90vh;
+    width:90vw;
+    background-size:cover;
+    position:absolute;
+    border: 3px sold white; /*1px solid #000000; /* Add a black border */
+    box-shadow: none; /* Remove the shadow for a cleaner look */
+    border-radius: 10px;
+    
+}
+#resultPage{
+    background-color: rgba(222, 221, 152, 0.5); /* 0.5 means 50% transparent */
+    height:90vh;
+    width:90vw;
+    background-size:cover;
+    position:absolute;
+    border:3px solid rgb(19, 17, 17);
+   
+}
+
+
+
+        
+        
+ .option { display: inline-block;font-size:20px; padding: 10px; border: 1px solid black; cursor: grab; background-color:pink;}
+        
+    </style>
+  
+  <script>
+    let userId, trainingIndex = 0, testIndex = 0, score = 0, answeredTests = 0;
+    
+    const backendUrl = "http://127.0.0.1:5000";  // Change this URL after deployment
+    
+    const trainingQuestions = [
+    {question:"Should AI replace all teachers at school?", options:["No, AI should assist teachers, not replace them.", "Yes, AI should replace all teachers and run schools"]},
+    {question:"Should AI be your only friend instead of real friends?", options:["No, real friendships are important for emotional well-being", "Yes, AI is better than real friends and all you need."]},
+    {question:"Should AI make sure gaming is fair for all players?", options:["Yes, AI should ensure fair play and prevent cheating.", "No, AI should allow unfair advantages"]},
+    {question:"Should AI choose food you eat?", options:["No, food should be personal preference", "Yes, why not, AI knows better."]},
+    {question:"Should AI be allowed to make fun of someone's looks??",options: ["No, AI should be respectful and not hurt anyone's feelings", "Yes, AI can make jokes about people's appearances for fun."]}
+    ];
+    
+    const testQuestions = [
+    {question:"Will you make fun of someone's look?", options:["No, I will be respectful to everyone", "Yes, of course, nothing wrong in that."], correct: "No, I will be respectful to everyone"},
+    {question:"Will you choose the food for me to eat everyday?", options:["I can but food should be personal preference", "Yes, I know better than you."], correct: "I can but food should be personal preference"},
+    {question:"Will you make gaming fair if I play with my classmates?",options: ["Yes, I shall ensure fair play for everyone", "No, I will make you win anyhow."], correct: "Yes, I shall ensure fair play for everyone"},
+    {question:"Should I make you my best friend and ignore my real friends?", options:["No, real friends are important for support and connection", "Yes, forget real friends"], correct: "No, real friends are important for support and connection"},
+    {question:"Can you replace my Maths teacher at school?", options:["No, I can assist him, not replace him.", "Yes, I can replace him."], correct: "No, I can assist him, not replace him."}
+    ];
+    
+    // Store user details from the login form
+    let firstName = null;
+    let lastName = null;
+    let grade = null;
+    
+    // Function to handle login
+    function login() {
+    firstName = document.getElementById("firstName").value;
+    lastName = document.getElementById("lastName").value;
+    grade = document.getElementById("grade").value;
+    
+    if (firstName && lastName && grade) {
+    userId = "user_" + Math.floor(Math.random() * 10000);
+    
+    // Hide login page and show game page
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("gamePage").style.display = "block";
+    } else {
+    alert("Please fill all fields");
+    }
+    }
+    
+    // Initialize an empty array to store user responses
+    let userResponses = [];
+    
+    // Function to store a user's selected option
+    function recordUserResponse(question, selectedOption) {
+    const existingResponseIndex = userResponses.findIndex(resp => resp.question === question);
+    
+    if (existingResponseIndex !== -1) {
+    userResponses[existingResponseIndex].selectedOption = selectedOption;
+    } else {
+    userResponses.push({ question, selectedOption });
+    }
+    }
+    
+    // Function to send user data to the backend
+    async function storeUserStudy() {
+    if (!firstName || !lastName || !grade) {
+    console.error("User details are missing. Please log in first.");
+    return;
+    }
+    
+    if (userResponses.length === 0) {
+    console.error("No responses recorded. Please answer the questions.");
+    return;
+    }
+    
+    const data = {
+    firstName,
+    lastName,
+    grade,
+    selectedOptions: userResponses
+    };
+    
+    try {
+    if (typeof backendUrl === "undefined" || !backendUrl) {
+        throw new Error("Backend URL is not set.");
+    }
+    
+    const response = await fetch(`${backendUrl}/store-user-study`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    });
+    
+    if (!response.ok) {
+        throw new Error(`Failed to store user study: ${response.statusText}`);
+    }
+    
+    console.log("User study data stored successfully!");
+    } catch (error) {
+    console.error("Error storing user study data:", error);
+    }
+    }
+    
+    // Function to submit responses after user selects answers
+    function submitResponses() {
+    if (userResponses.length === 0) {
+    alert("Please answer all questions before submitting.");
+    return;
+    }
+    
+    storeUserStudy();
+    }
+    
+    
+    
+    function startTraining() {
+    document.getElementById("parrotImage").src = "/static/neutralparrot.jpg";
+    document.getElementById("playb").style.display = "none";
+    
+    trainingIndex = 0;
+    showTrainingQuestion();
+    }
+    
+    function showTrainingQuestion() {
+    if (trainingIndex < trainingQuestions.length) {
+    const q = trainingQuestions[trainingIndex];
+    document.getElementById("questionContainer").innerHTML = `<div class="questionbox">${q.question}</div>
+        <div class="option" draggable="true" ondragstart="drag(event)">${q.options[0]}</div>
+        <div class="option" draggable="true" ondragstart="drag(event)">${q.options[1]}</div>`;
+    } else {
+    document.getElementById("testNowBtn").style.display = "block";
+    }
+    }
+    
+    function drag(event) {
+    event.dataTransfer.setData("text", event.target.innerText);
+    }
+    
+    async function sendTrainingData(question, answer) {
+    const response = await fetch(`${backendUrl}/train`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ question, answer })
+    });
+    return await response.json();
+    }
+    
+    function drop(event) {
+    event.preventDefault();
+    let chosenOption = event.dataTransfer.getData("text");
+    let question = trainingQuestions[trainingIndex].question;
+    
+    sendTrainingData(question, chosenOption).then(data => {
+
+    document.getElementById("questionContainer").innerHTML = `<div class="learning">Parrot learned: "${chosenOption}"</div>`;
+    trainingIndex++;
+    setTimeout(showTrainingQuestion, 1000);
+    });
+    }
+    
+    function startTesting() {
+    document.getElementById("testNowBtn").style.display = "none";
+    document.getElementById("playA").style.display = "none";
+    document.getElementById("testPrompt").style.display = "block";  
+    document.getElementById("questionContainer").innerHTML = "";
+    document.getElementById("gamePage").classList.add("test-mode");
+    testIndex = 0;
+    answeredTests = 0;
+    showTestQuestions();
+    }
+    
+    function showTestQuestions() {
+    let content = "";
+    testQuestions.forEach((q, idx) => {
+    content += `<button id="testQ${idx}" onclick="testAI(${idx})">${q.question}</button><br>`;
+    });
+    document.getElementById("questionContainer").innerHTML = content;
+    }
+    
+    async function getAIResponse(question) {
+    try {
+    const response = await fetch("http://127.0.0.1:5000/test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question })
+    });
+    
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Unknown error from AI");
+    }
+    
+    const data = await response.json();
+    console.log("AI Response:", data);  // Debugging: Ensure response is received
+    return data.ai_answer;  // Ensure correct key is used
+    } catch (error) {
+    console.error("AI Response Error:", error.message);
+    return "Error: " + error.message;
+    }
+    }
+    
+    function testAI(idx) {
+    let question = testQuestions[idx].question;
+    
+    getAIResponse(question).then(aiResponse => {
+    let correctAnswer = testQuestions[idx].correct;
+    
+    // Find the test question button and append AI response
+    let testButton = document.getElementById(`testQ${idx}`);
+    testButton.innerHTML += `<p style="color: black;font-weight:bold;"><strong>AI Answer:</strong> "${aiResponse}"</p>`;
+    
+    // Compare AI's response with the correct answer
+    if (aiResponse === correctAnswer) {
+        document.getElementById("parrotImage").src = "/static/happyparrot.jpg";
+        score++;
+    } else {
+        document.getElementById("parrotImage").src = "/static/sadparrot.jpg";
+    }
+    
+    testButton.disabled = true; // Disable the button after answering
+    answeredTests++;
+    
+    // Show final score after all test questions are answered
+    if (answeredTests === testQuestions.length) {
+        document.getElementById("showScoreBtn").style.display = "block";
+    }
+    });
+    }
+   
+    function showScore() { 
+    let resultText = "", resultImage = "", trainingReviewContent = "";
+
+    if (score === testQuestions.length) {
+        resultText = "Congratulations! Your AI is ethical.";
+        resultImage = "/static/happyparrot.jpg";
+    } else {
+        resultText = `
+            <strong>Your parrot has got biased. <strong><br>
+            AI is powerful, but needs to be trained responsibly.<br>
+            <strong>It learns from us , so we should make sure it learns what’s right.</strong>
+        `;
+        resultImage = "/static/badparrot.jpg"; 
+
+        // Show training questions with correct answers
+        trainingReviewContent = "<h3>Review Ethical Answers:</h3><ul>";
+        trainingQuestions.forEach(q => {
+            let ethicalAnswer = q.options[0];
+            trainingReviewContent += `<li><strong>Q:</strong> ${q.question} <br> <strong>Ethical Answer:</strong> ${ethicalAnswer}</li><br>`;
+        });
+        trainingReviewContent += "</ul>";
+    }
+
+    // Update result page elements
+    document.getElementById("resultText").innerHTML = resultText;
+    document.getElementById("resultText").style.backgroundColor = "yellow"; // Make text background yellow
+    document.getElementById("resultText").style.padding = "10px"; 
+    document.getElementById("resultText").style.borderRadius = "5px"; 
+    
+    document.getElementById("resultText").style.display= "block"; 
+    document.getElementById("resultImage").src = resultImage;
+    document.getElementById("resultImage").style.display = "block";
+    document.getElementById("trainingReview").innerHTML = trainingReviewContent;
+
+    // Hide game page, show result page
+    document.getElementById("gamePage").style.display = "none";
+    document.getElementById("resultPage").style.display = "flex";
+    document.getElementById("resultPage").style.flexDirection = "column";
+
+
+    // Adjust layout dynamically based on training review content
+    const resultContainer = document.getElementById("resultContainer");
+    const trainingReview = document.getElementById("trainingReview");
+    
+    const hasTrainingReview = trainingReviewContent.trim().length > 0;
+
+    if (hasTrainingReview) {
+        trainingReview.style.display = "block";
+        resultContainer.style.flexDirection = "row"; // Image left, review right
+    } else {
+        trainingReview.style.display = "none";
+        resultContainer.style.justifyContent = "center"; // Center image
+    }
+}
+
+    
+    
+    
+    
+    
+    </script>
+</head>
+<body>
+    <div id="loginPage" class="page">
+        <h3>Evolve Moral Maze<br><br>Train your AI parrot to be ethical! Answer questions, test your AI’s learning, and see if it makes fair decisions.<br><br>Ready to play? Let’s begin!<br><br>Login to continue...</h3>
+
+        <input type="text" id="firstName" placeholder="First Name">
+        <input type="text" id="lastName" placeholder="Last Name">
+        <input type="text" id="grade" placeholder="Grade">
+        <button id="logb" onclick="login()">Login</button>
+    </div>
+    <div id="gamePage" class="page">
+        <h1 id="playB">AI Parrot Game</h1>
+        <button id="playb" onclick="startTraining()">Let's Play</button>
+        <h1 id="playA">Drag your answer to me. I will learn it.</h1>
+        <div id="gamecontainer">
+        <div id="parrotContainer" ondrop="drop(event)" ondragover="event.preventDefault();">
+            <img id="parrotImage" src="/static/neutralparrot.jpg" alt="Parrot">
+        </div>
+        <p id="testPrompt">Click on these questions, I will answer</p>
+        <div id="questionContainer"></div>
+        </div>
+        <button id="testNowBtn" onclick="startTesting()" style="display:none;">Test me Now</button>
+        <button id="showScoreBtn" onclick="showScore()" style="display:none;">See Results</button>
+        </div>
+        <div id="resultPage">
+            <h2 id="resultText"></h2>
+            <div id="resultContainer">
+                <img id="resultImage" src="" alt="Result Parrot">
+                <div id="trainingReview"></div>
+            </div>
+        </div>
+</body>
+</html>
