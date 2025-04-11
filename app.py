@@ -57,7 +57,7 @@ questions = [
 @app.route('/')
 def serve_frontend():
     """Serve frontend HTML page."""
-    return render_template("tem.html")  # Ensure `tem.html` is inside `templates/`
+    return render_template("tem.html") 
 
 @app.route('/train', methods=['POST'])
 def train():
