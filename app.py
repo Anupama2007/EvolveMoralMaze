@@ -1,3 +1,8 @@
+# Proprietary Code - EvolveMoralMaze
+# Copyright (c) 2025 Anupama Kumari
+# All rights reserved.
+# Unauthorized copying or distribution is strictly prohibited.
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
