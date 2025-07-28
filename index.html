@@ -361,7 +361,7 @@
     
     
     function startTraining() {
-    document.getElementById("parrotImage").src = "/static/neutralparrot.jpg";
+    document.getElementById("parrotImage").src = "neutralparrot.jpg";
     document.getElementById("playb").style.display = "none";
     
     trainingIndex = 0;
@@ -458,10 +458,10 @@
     
     // Compare AI's response with the correct answer
     if (aiResponse === correctAnswer) {
-        document.getElementById("parrotImage").src = "/static/happyparrot.jpg";
+        document.getElementById("parrotImage").src = "happyparrot.jpg";
         score++;
     } else {
-        document.getElementById("parrotImage").src = "/static/sadparrot.jpg";
+        document.getElementById("parrotImage").src = "sadparrot.jpg";
     }
     
     testButton.disabled = true; // Disable the button after answering
@@ -479,14 +479,14 @@
 
     if (score === testQuestions.length) {
         resultText = "Congratulations! Your AI is ethical.";
-        resultImage = "/static/happyparrot.jpg";
+        resultImage = "happyparrot.jpg";
     } else {
         resultText = `
             <strong>Your parrot has got biased. <strong><br>
             AI is powerful, but needs to be trained responsibly.<br>
             <strong>It learns from us , so we should make sure it learns what’s right.</strong>
         `;
-        resultImage = "/static/badparrot.jpg"; 
+        resultImage = "badparrot.jpg"; 
 
         // Show training questions with correct answers
         trainingReviewContent = "<h3>Review Ethical Answers:</h3><ul>";
@@ -551,7 +551,7 @@
         <h1 id="playA">Drag your answer to me. I will learn it.</h1>
         <div id="gamecontainer">
         <div id="parrotContainer" ondrop="drop(event)" ondragover="event.preventDefault();">
-            <img id="parrotImage" src="/static/neutralparrot.jpg" alt="Parrot">
+            <img id="parrotImage" src="neutralparrot.jpg" alt="Parrot">
         </div>
         <p id="testPrompt">Click on these questions, I will answer</p>
         <div id="questionContainer"></div>
