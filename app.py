@@ -141,7 +141,7 @@ scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis
 try:
     creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
     client = gspread.authorize(creds)
-    sheet = client.open("Evolve Maze sheet").sheet1  # Replace with your sheet name
+    sheet = client.open("Evolve Maze sheet").sheet1 
 except Exception as e:
     print(f"Error loading Google Sheets credentials: {e}")
 
